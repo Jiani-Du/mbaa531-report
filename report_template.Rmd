@@ -1,0 +1,206 @@
+---
+pagetitle: "Tech Compensation Analysis"
+output:
+  html_document:
+    theme: null
+    highlight: null
+    mathjax: null
+    css: report.css
+    includes:
+      after_body: report_scroll.html
+knit: (function(input, ...) rmarkdown::render(
+    input, output_file = "index.html"))
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo      = FALSE,
+  message   = FALSE,
+  warning   = FALSE,
+  fig.width  = 6,
+  fig.height = 3.5,
+  dpi        = 150,
+  out.width  = "100%"
+)
+library(dplyr)
+library(ggplot2)
+library(ggridges)
+
+df <- readRDS("../data/test4_dataset.rds")
+```
+
+<div class="report-wrap">
+
+<!-- ── HEADER ──────────────────────────────────── -->
+<!-- Edit the kicker, headline, deck, and byline.  -->
+<!-- Do not change the class names or HTML tags.   -->
+
+<header class="report-header fade-in">
+  <p class="report-kicker">
+    Data Analysis &middot; MBAA 531
+  </p>
+  <h1 class="report-headline">
+    Structural Analysis of Tech Industry Compensation
+  </h1>
+  <p class="report-deck">
+    This report examines how professional experience and career stage drive salary variance among 23,876 tech industry workers.
+  </p>
+  <p class="report-byline">
+    By <strong>Jiani Du</strong> &middot;
+    Dataset: Talent Market Compensation
+  </p>
+</header>
+
+
+<!-- ── SECTION 1: THE DATA ─────────────────────── -->
+
+::: {.report-section .fade-in}
+
+## The Data
+
+This dataset contains compensation details for 23,876 tech professionals. The unit of observation is the individual worker, covering a career span from entry-level (0 years) to senior experts (20 years). By analyzing the relationship between experience, skills, and compensation, this report aims to uncover the salary structure within the global tech labor market, providing insights for career planning and organizational strategy.
+
+:::
+
+
+<!-- ── SECTION 2: THE CENTRAL FINDING ─────────── -->
+
+::: {.report-section .fade-in}
+
+## The Central Finding
+
+This report utilizes the derived variable "Mean Salary by Experience" (new_var) to smooth out data noise and highlight clear trends.
+
+This average represents the central tendency of the dataset, illustrating that while individual roles vary, there is a consistent salary growth trajectory as professionals accumulate expertise.
+
+:::
+
+<div class="pull-stat fade-in">
+  <span class="stat-number">145,532</span>
+  <span class="stat-label">
+    The average annual salary in USD across all experience levels. It highlights the overall compensation baseline for the tech workforce.
+  </span>
+</div>
+
+::: {.report-section .fade-in}
+
+The variable `new_var` measures the mean salary calculated per year of professional experience. A value of 145,532 USD serves as the industry-wide benchmark. A high value relative to this mean suggests a significant experience-based salary premium, while values below this benchmark typically indicate early-career stages or entry-level roles.
+
+:::
+
+
+<!-- ── SECTION 3: SCATTER CHART ───────────────── -->
+
+::: {.report-section .fade-in}
+
+## A Closer Look
+
+As experience increases, salaries show a clear upward trend. Most professionals are concentrated in the 5 to 15-year experience bracket, with salaries typically ranging between 120,000 and 250,000 USD.
+
+<div class="chart-wrap">
+
+```{r scatter}
+ggplot(df, aes(x = experience_yrs, y = salary_usd)) +
+  geom_point(
+    alpha  = 0.35,
+    size   = 1.4,
+    colour = "#c0392b"
+  ) +
+  labs(title = NULL, x = "Years of Experience", y = "Salary (USD)") +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(colour = "#eeeeee"),
+    axis.text = element_text(colour = "#555")
+  )
+```
+
+<p class="chart-caption">
+  Chart 1: Scatter plot illustrating the positive correlation between years of experience and annual salary (USD).
+</p>
+</div>
+
+This scatter plot validates that experience is a primary driver of salary growth in the tech sector. The clustering between 5 and 15 years suggests a robust mid-career compensation range, while outliers above 300,000 USD indicate the existence of high-earning senior specialist roles.
+:::
+
+
+<!-- ── SECTION 4: RIDGE CHART ─────────────────── -->
+
+::: {.report-section .fade-in}
+
+## Across Groups
+
+To further explore structural differences, I categorized the workforce into "Salary Tiers" (cat_final) using a quantile-based grouping method, which ensures balanced sample distribution across tiers.
+
+:::
+
+
+::: {.report-section .fade-in}
+
+<div class="chart-wrap">
+
+```{r ridge}
+# Paste your best ridge chart from Test 4 here.
+# Replace colX and groupCol with your column names.
+ggplot(df, aes(x    = salary_usd,
+               y    = cat_final,
+               fill = cat_final)) +
+  geom_density_ridges(
+    alpha     = 0.55,
+    colour    = "white",
+    linewidth = 0.4
+  ) +
+  scale_fill_manual(
+    values = rep("#c0392b", 20)
+  ) +
+  labs(title = NULL, x = "Annual Salary (USD)", y = "Salary Tier") +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position    = "none",
+    panel.grid.minor   = element_blank(),
+    panel.grid.major.y = element_blank(),
+    panel.grid.major.x = element_line(
+      colour = "#eeeeee"
+    ),
+    axis.text = element_text(colour = "#555")
+  )
+```
+
+<p class="chart-caption">
+  Chart 2: Density ridge plot showing salary distribution (salary_usd) grouped by compensation tier (cat_final).
+</p>
+</div>
+
+The ridge plot demonstrates clear stratification, with the 'High' salary tier standing out due to its peak near **220,000** USD and its significantly wider distribution, indicating higher pay variance at the top end. Unlike the scatter plot which emphasizes a continuous salary-experience growth trend, this chart reveals distinct structural compensation tiers, highlighting that pay gaps are not just driven by time, but by clear-cut organizational career strata.
+
+:::
+
+
+<!-- ── CONCLUSION ──────────────────────────────── -->
+
+::: {.report-section .fade-in}
+
+## What This Means
+
+In conclusion, tech industry compensation is driven by the duality of experience accumulation and salary tier stratification. The scatter plot validates the professional experience premium, while the ridge plot highlights the high variance within top-tier compensation. For decision-makers, understanding these structural gaps is critical for attracting and retaining top-tier talent.
+
+:::
+
+
+<!-- ── FOOTER ──────────────────────────────────── -->
+
+<footer class="report-footer">
+  <p>
+    Published via GitHub Pages &middot;
+    MBAA 531 Data Analytics &middot;
+    Vancouver Island University
+  </p>
+  <p>
+    Source:
+    <a href="https://github.com/Jiani-Du/mbaa531-report">
+  github.com/Jiani-Du/mbaa531-report
+    </a>
+  </p>
+</footer>
+
+</div><!-- end .report-wrap -->
